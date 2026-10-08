@@ -26,6 +26,6 @@ jobs:
 
       - name: Fetch NBA data
         env:
-          SPORTS_API_KEY: ${{ secrets.API_SPORTS_KEY }}
+          SPORTS_API_KEY: ${{ secrets.SPORTS_API_KEY }}
         run: |
           python data/fetch_nba.py
