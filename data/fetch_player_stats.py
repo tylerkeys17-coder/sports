@@ -2,6 +2,7 @@
 import os
 import sqlite3
 import requests
+import time
 from pathlib import Path
 
 API_KEY = os.getenv("SPORTS_API_KEY")
@@ -165,8 +166,9 @@ def main():
     total = 0
 
     for game_id in game_ids:
-        try:
-            stats = fetch_player_stats(game_id)
+    try:
+        time.sleep(7)
+        stats = fetch_player_stats(game_id)
             saved = save_player_stats(game_id, stats)
             total += saved
             print(f"Game {game_id}: saved {saved} player records.")
