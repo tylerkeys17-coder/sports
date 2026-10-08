@@ -1,1 +1,168 @@
 
+import os
+import sqlite3
+import requests
+from pathlib import Path
+
+API_KEY = os.getenv("SPORTS_API_KEY")
+BASE_URL = "https://v2.nba.api-sports.io"
+
+DATABASE_PATH = Path(__file__).parent / "sports.db"
+
+
+def get_connection():
+    return sqlite3.connect(DATABASE_PATH)
+
+
+def fetch_player_stats(game_id):
+    if not API_KEY:
+        raise ValueError("SPORTS_API_KEY is not configured.")
+
+    response = requests.get(
+        f"{BASE_URL}/players/statistics",
+        headers={"x-apisports-key": API_KEY},
+        params={"game": game_id},
+        timeout=30,
+    )
+
+    response.raise_for_status()
+    data = response.json()
+
+    if data.get("errors"):
+        raise ValueError(f"API error: {data['errors']}")
+
+    return data.get("response", [])
+
+
+def save_player_stats(game_id, stats):
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS player_games (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            game_id INTEGER,
+            player TEXT,
+            team TEXT,
+            opponent TEXT,
+            minutes REAL,
+            points REAL,
+            rebounds REAL,
+            assists REAL,
+            three_pointers REAL,
+            usage_rate REAL
+        )
+    """)
+
+    cursor.execute("""
+        CREATE UNIQUE INDEX IF NOT EXISTS
+        idx_player_games_unique
+        ON player_games (game_id, player, team)
+    """)
+
+    saved = 0
+
+    for item in stats:
+        player_info = item.get("player") or {}
+        team_info = item.get("team") or {}
+        game_info = item.get("game") or {}
+
+        player_name = player_info.get("name")
+        team_name = team_info.get("name")
+
+        if not player_name or not team_name:
+            continue
+
+        opponents = game_info.get("teams") or {}
+        home = opponents.get("home") or {}
+        away = opponents.get("visitors") or {}
+
+        if home.get("id") == team_info.get("id"):
+            opponent = away.get("name")
+        else:
+            opponent = home.get("name")
+
+        minutes = item.get("min")
+        if isinstance(minutes, str) and ":" in minutes:
+            parts = minutes.split(":")
+            minutes = float(parts[0]) + float(parts[1]) / 60
+        elif minutes in (None, ""):
+            minutes = None
+        else:
+            minutes = float(minutes)
+
+        rebounds = item.get("rebounds") or {}
+
+        if isinstance(rebounds, dict):
+            rebounds = rebounds.get("total")
+
+        threes = item.get("tpm")
+
+        cursor.execute("""
+            INSERT INTO player_games (
+                game_id, player, team, opponent,
+                minutes, points, rebounds, assists,
+                three_pointers, usage_rate
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(game_id, player, team)
+            DO UPDATE SET
+                opponent = excluded.opponent,
+                minutes = excluded.minutes,
+                points = excluded.points,
+                rebounds = excluded.rebounds,
+                assists = excluded.assists,
+                three_pointers = excluded.three_pointers
+        """, (
+            game_id,
+            player_name,
+            team_name,
+            opponent,
+            minutes,
+            item.get("points"),
+            rebounds,
+            item.get("assists"),
+            threes,
+            item.get("usageRate"),
+        ))
+
+        saved += 1
+
+    connection.commit()
+    connection.close()
+
+    return saved
+
+
+def main():
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT id FROM games
+        WHERE home_score IS NOT NULL
+        AND away_score IS NOT NULL
+    """)
+
+    game_ids = [row[0] for row in cursor.fetchall()]
+    connection.close()
+
+    print(f"Found {len(game_ids)} completed games.")
+
+    total = 0
+
+    for game_id in game_ids:
+        try:
+            stats = fetch_player_stats(game_id)
+            saved = save_player_stats(game_id, stats)
+            total += saved
+            print(f"Game {game_id}: saved {saved} player records.")
+
+        except Exception as error:
+            print(f"Game {game_id} failed: {error}")
+
+    print(f"Finished. Processed {total} player records.")
+
+
+if __name__ == "__main__":
+    main()
