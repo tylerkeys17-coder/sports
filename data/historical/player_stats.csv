@@ -1,0 +1,5 @@
+date,player,team,opponent,home,minutes,points,rebounds,assists,three_pointers,usage_rate
+2026-10-01,PLAYER,TEAM,OPP,1,35,28,6,5,3,28.4
+2026-10-03,PLAYER,TEAM,OPP,0,37,31,5,7,4,30.1
+2026-10-05,PLAYER,TEAM,OPP,1,34,24,8,4,2,26.7
+2026-10-07,PLAYER,TEAM,OPP,0,38,34,7,6,5,31.2
