@@ -87,10 +87,12 @@ def save_games(data):
 
 
 def main():
+    from datetime import datetime, timezone
 
-    date = "2026-10-08"
+    date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
     data = fetch_games(date)
+    save_games(data)
 
     save_games(data)
 
