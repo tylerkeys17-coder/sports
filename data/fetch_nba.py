@@ -94,7 +94,7 @@ def main():
     data = fetch_games(date)
     save_games(data)
 
-    save_games(data)
+ 
 
 
 if __name__ == "__main__":
