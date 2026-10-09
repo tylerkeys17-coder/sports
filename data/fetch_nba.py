@@ -18,7 +18,6 @@ def get_connection():
 
 
 def fetch_games(date):
-
     if not API_KEY:
         raise ValueError(
             "SPORTS_API_KEY is not configured."
@@ -27,21 +26,24 @@ def fetch_games(date):
     response = requests.get(
         f"{BASE_URL}/games",
         headers={
-            "x-apisports-key": API_KEY
+            "x-apisports-key": API_KEY,
         },
         params={
-            "date": date
+            "date": date,
         },
-        timeout=30
+        timeout=30,
     )
 
-        response.raise_for_status()
+    response.raise_for_status()
+
     payload = response.json()
+
     print("API diagnostics:")
     print("Parameters:", payload.get("parameters"))
     print("Errors:", payload.get("errors"))
     print("Results:", payload.get("results"))
     print("Response count:", len(payload.get("response", [])))
+
     return payload
 
 
