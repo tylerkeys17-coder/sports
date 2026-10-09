@@ -87,12 +87,28 @@ def save_games(data):
 
 
 def main():
-    from datetime import datetime, timezone
+    from datetime import datetime, timedelta, timezone
 
-    date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    today = datetime.now(timezone.utc).date()
 
-    data = fetch_games(date)
-    save_games(data)
+    total_saved = 0
+
+    for offset in range(7):
+        date = (today - timedelta(days=offset)).strftime("%Y-%m-%d")
+
+        data = fetch_games(date)
+        games = data.get("response", [])
+
+        print(f"{date}: API returned {len(games)} games")
+
+        save_games(data)
+        total_saved += len(games)
+
+    print(f"Finished. API returned {total_saved} games across 7 days.")
+
+
+if __name__ == "__main__":
+    main()
 
  
 
