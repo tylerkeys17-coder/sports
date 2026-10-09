@@ -29,11 +29,15 @@ jobs:
           SPORTS_API_KEY: ${{ secrets.SPORTS_API_KEY }}
         run: |
           python data/fetch_nba.py
-
+    
+     
       - name: Fetch player statistics
         env:
           SPORTS_API_KEY: ${{ secrets.SPORTS_API_KEY }}
         run: |
           python data/fetch_player_stats.py
 
-    
+      - name: Export player statistics
+        run: |
+          python data/export_player_stats.py
+
