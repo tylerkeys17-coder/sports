@@ -7,9 +7,9 @@ permissions:
   contents: write
 
 jobs:
- update-data:
+  update-data:
    runs-on: ubuntu-latest
-  steps:
+   steps:
   - name: Checkout repository
     uses: actions/checkout@v4
   - name: Set up Python
