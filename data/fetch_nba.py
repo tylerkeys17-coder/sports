@@ -37,7 +37,15 @@ def fetch_games(date):
 
     response.raise_for_status()
 
-    return response.json()
+payload = response.json()
+
+print("API diagnostics:")
+print("Parameters:", payload.get("parameters"))
+print("Errors:", payload.get("errors"))
+print("Results:", payload.get("results"))
+print("Response count:", len(payload.get("response", [])))
+
+return payload
 
 
 def save_games(data):
