@@ -1,12 +1,13 @@
+
 import csv
 import sqlite3
 from pathlib import Path
 
-DATA_DIR = Path(file).resolve().parent
-DB_PATH = DATA_DIR / “sports.db”
-OUTPUT_PATH = DATA_DIR / “historical” / “player_stats.csv”
+# Project paths
+DATA_DIR = Path(__file__).resolve().parent
+DB_PATH = DATA_DIR / "sports.db"
+OUTPUT_PATH = DATA_DIR / "historical" / "player_stats.csv"
 
-def export_player_stats():
 if not DB_PATH.exists():
 raise FileNotFoundError(f”Database not found: {DB_PATH}”)
 
