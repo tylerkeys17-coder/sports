@@ -9,7 +9,11 @@ DB_PATH = DATA_DIR / "sports.db"
 OUTPUT_PATH = DATA_DIR / "historical" / "player_stats.csv"
 
 if not DB_PATH.exists():
-raise FileNotFoundError(f”Database not found: {DB_PATH}”)
+
+        raise FileNotFoundError(
+            f"Database not found: {DB_PATH}"
+        )
+
 
 OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
 with sqlite3.connect(DB_PATH) as conn:
