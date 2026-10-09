@@ -32,7 +32,9 @@ def fetch_player_stats(game_id):
     if data.get("errors"):
         raise ValueError(f"API error: {data['errors']}")
 
-    return data.get("response", [])
+    result = data.get("response", [])
+print(f"Game {game_id}: API returned {len(result)} player records")
+return result
 
 
 
