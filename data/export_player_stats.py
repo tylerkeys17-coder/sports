@@ -56,4 +56,4 @@ print(f"CSV saved to: {OUTPUT_PATH}")
 
 
 if __name__ == "__main__":
-export_player_stats()
+    export_player_stats()
