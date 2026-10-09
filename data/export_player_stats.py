@@ -55,25 +55,5 @@ print(f"CSV saved to: {OUTPUT_PATH}")
 
 
 
-if __name__ == "__main__":
-    export_player_stats()
-
-        raise RuntimeError(
-            "No player statistics found in the database."
-        )
-
-    with open(
-        OUTPUT_PATH,
-        "w",
-        newline="",
-        encoding="utf-8"
-    ) as file:
-        writer = csv.DictWriter(
-            file,
-            fieldnames=rows[0].keys()
-        )
-        writer.writeheader()
-        writer.writerows([dict(row) for row in rows])
-
-print(f"Exported {len(rows)} player records.")
-print(f"CSV saved to: {OUTPUT_PATH}")
+if name == “main”:
+export_player_stats()
