@@ -51,8 +51,10 @@ with sqlite3.connect(DB_PATH) as conn:
 print(f"Exported {len(rows)} player records.")
 print(f"CSV saved to: {OUTPUT_PATH}")
 
-if name == “main”:
-export_player_stats()
+
+if __name__ == "__main__":
+    export_player_stats()
+
 OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
 
 with sqlite3.connect(DB_PATH) as conn:
